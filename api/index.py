@@ -1,13 +1,10 @@
-"""
-Vercel Serverless Entry Point
-==============================
-This module wraps the MCP server with an SSE HTTP transport so Vercel can
-serve it as a public endpoint.
+import sys
+import os
 
-Vercel routes all traffic from /api/* → this function.
-"""
+# Add the project root to the Python path to ensure server.py can be imported
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from server import mcp
 
-# Expose the ASGI app. Vercel's Python runtime (WSGI bridge) will call this.
-app = mcp.get_asgi_app()
+# This exposes the Starlette ASGI application for Vercel's Python runtime
+app = mcp.sse_app()
