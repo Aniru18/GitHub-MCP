@@ -1,0 +1,51 @@
+# ── Secrets & Environment ─────────────────────────────────────────────────────
+.env
+.env.*
+.env.example          
+
+# Claude Desktop config (may contain tokens — keep it local only)
+claude_desktop_config.json
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[oc]
+*.pyo
+*.pyd
+*.so
+
+# Distribution / build
+build/
+dist/
+wheels/
+*.egg-info/
+*.egg
+MANIFEST
+
+# ── uv / Virtual Environments ─────────────────────────────────────────────────
+.venv/
+venv/
+env/
+.python-version
+uv.lock          # optional: commit this if you want reproducible installs
+                 # (remove the line above to track it)
+
+# ── Cloned repos (from clone_repo tool) ──────────────────────────────────────
+# If users clone repos into this project folder, don't accidentally commit them
+cloned_repos/
+repos/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor ────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
