@@ -1054,21 +1054,31 @@ async def get_file_url(
 # if __name__ == "__main__":
 #     main()
 
+app = mcp.streamable_http_app()
+
+
+# ── Entry point (local dev only) ─────────────────────────────────────────────
 def main() -> None:
+    import uvicorn
+
     if _TRANSPORT == "stdio":
-        print("🔍 Running in STDIO mode (fastmcp dev / inspector)")
+        print("🔍 Running in STDIO mode")
+        import anyio
+        anyio.run(mcp.run_stdio_async)
+        return
+
+    print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
+    path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
+    print(f"   Transport : {_TRANSPORT}")
+    print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
+    print("   Pass your GitHub PAT via the `github_token` tool parameter.")
+    print("   Press Ctrl+C to stop.\n")
+
+    if _TRANSPORT == "sse":
+        import anyio
+        anyio.run(mcp.run_sse_async)
     else:
-        print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
-        path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
-        print(f"   Transport : {_TRANSPORT}")
-        print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
-        print("   Pass your GitHub PAT via the `github_token` tool parameter.")
-        print("   Press Ctrl+C to stop.\n")
-
-    import nest_asyncio
-    nest_asyncio.apply()  # Allows nested event loops (needed for FastMCP Cloud)
-
-    mcp.run(transport=_TRANSPORT)
+        uvicorn.run(app, host=_HOST, port=_PORT)
 
 
 if __name__ == "__main__":
