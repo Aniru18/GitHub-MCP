@@ -34,7 +34,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import nest_asyncio
+
 import base64
 import json
 import os
@@ -47,15 +47,16 @@ from typing import Any
 from github import Auth, Github, GithubException
 import anyio
 from mcp.server.fastmcp import FastMCP
-nest_asyncio.apply()
+
 # ── Constants ────────────────────────────────────────────────────────────────
 MAX_CONTENT_CHARS = 50_000
 MAX_ANALYZE_FILES = 500
 DEFAULT_PORT      = 8000
 DEFAULT_HOST      = "0.0.0.0"
 
-# ── Parse host / port early so FastMCP is configured before tools register ───
-# (argparse runs at import-time only when executed directly; safe for imports)
+
+
+
 # def _parse_args() -> tuple[str, int, str]:
 #     parser = argparse.ArgumentParser(
 #         description="GitHub Repository Analyzer MCP Server",
@@ -73,53 +74,20 @@ DEFAULT_HOST      = "0.0.0.0"
 #     )
 #     parser.add_argument(
 #         "--transport",
-#         choices=["stdio", "sse", "streamable-http"],
+#         choices=["stdio", "sse", "streamable-http", "http"],  # "http" alias for FastMCP Cloud
 #         default=os.environ.get("TRANSPORT", "streamable-http"),
-#         help=(
-#             "Transport to use:\n"
-#             "  stdio            — for 'fastmcp dev' inspector UI (testing)\n"
-#             "  sse              — legacy HTTP+SSE (some older clients)\n"
-#             "  streamable-http  — modern HTTP transport, default for production"
-#         ),
+#         help="Transport to use",
 #     )
-#     # parse_known_args so fastmcp dev can inject its own flags without breaking us
 #     args, _ = parser.parse_known_args()
-#     return args.host, args.port, args.transport
+
+#     # FastMCP Cloud passes "http" — map it to the correct "streamable-http"
+#     transport = args.transport
+#     if transport == "http":
+#         transport = "streamable-http"
+
+#     return args.host, args.port, transport
 
 # _HOST, _PORT, _TRANSPORT = _parse_args()
-
-
-def _parse_args() -> tuple[str, int, str]:
-    parser = argparse.ArgumentParser(
-        description="GitHub Repository Analyzer MCP Server",
-        add_help=True,
-    )
-    parser.add_argument(
-        "--port", type=int,
-        default=int(os.environ.get("PORT", DEFAULT_PORT)),
-        help=f"Port to listen on (default {DEFAULT_PORT})",
-    )
-    parser.add_argument(
-        "--host",
-        default=os.environ.get("HOST", DEFAULT_HOST),
-        help=f"Host to bind (default {DEFAULT_HOST})",
-    )
-    parser.add_argument(
-        "--transport",
-        choices=["stdio", "sse", "streamable-http", "http"],  # "http" alias for FastMCP Cloud
-        default=os.environ.get("TRANSPORT", "streamable-http"),
-        help="Transport to use",
-    )
-    args, _ = parser.parse_known_args()
-
-    # FastMCP Cloud passes "http" — map it to the correct "streamable-http"
-    transport = args.transport
-    if transport == "http":
-        transport = "streamable-http"
-
-    return args.host, args.port, transport
-
-_HOST, _PORT, _TRANSPORT = _parse_args()
 
 # ── MCP server instance ──────────────────────────────────────────────────────
 # host / port must be set here — FastMCP.run() does NOT accept them as kwargs.
@@ -134,9 +102,9 @@ mcp = FastMCP(
         "inspect commits, branches, contributors, issues, pull requests, "
         "clone repositories locally, and run deep structural analysis across "
         "any public (or private, with a suitable PAT) GitHub repository."
-    ),
-    host=_HOST,
-    port=_PORT,
+    )
+    # host=_HOST,
+    # port=_PORT,
 )
 
 
@@ -1037,19 +1005,37 @@ async def get_file_url(
 
 # ── Entry point ──────────────────────────────────────────────────────────────
 
-def main() -> None:
-    if _TRANSPORT == "stdio":
-        print("🔍 Running in STDIO mode (fastmcp dev / inspector)")
-    else:
-        print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
-        path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
-        print(f"   Transport : {_TRANSPORT}")
-        print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
-        print("   Pass your GitHub PAT via the `github_token` tool parameter.")
-        print("   Press Ctrl+C to stop.\n")
+# def main() -> None:
+#     if _TRANSPORT == "stdio":
+#         print("🔍 Running in STDIO mode (fastmcp dev / inspector)")
+#     else:
+#         print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
+#         path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
+#         print(f"   Transport : {_TRANSPORT}")
+#         print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
+#         print("   Pass your GitHub PAT via the `github_token` tool parameter.")
+#         print("   Press Ctrl+C to stop.\n")
 
-    mcp.run(transport=_TRANSPORT)
+#     mcp.run(transport=_TRANSPORT)
 
 
-asyncio.run(main())
+# if __name__ == "__main__":
+#     main()
 
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="GitHub Repository Analyzer MCP Server")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", DEFAULT_PORT)))
+    parser.add_argument("--host", default=os.environ.get("HOST", DEFAULT_HOST))
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "sse", "streamable-http"],
+        default=os.environ.get("TRANSPORT", "stdio"),
+    )
+    args, _ = parser.parse_known_args()
+
+    transport = args.transport
+
+    print(f"🚀 Starting locally on {args.host}:{args.port} | transport: {transport}")
+    mcp.run(transport=transport)
