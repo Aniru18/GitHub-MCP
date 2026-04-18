@@ -1,3 +1,0 @@
-[deployment]
-command = "python server.py"
-
