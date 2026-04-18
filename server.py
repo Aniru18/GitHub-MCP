@@ -1,3 +1,4 @@
+# ................code for fastmcp cloud deployment.................
 # """
 # GitHub Repository Analyzer — MCP Server (Async + Multi-User + HTTP)
 # =====================================================================
