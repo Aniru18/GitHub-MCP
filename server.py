@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import nest_asyncio
 import base64
 import json
 import os
@@ -1064,25 +1065,10 @@ def main() -> None:
         print("   Pass your GitHub PAT via the `github_token` tool parameter.")
         print("   Press Ctrl+C to stop.\n")
 
-    import asyncio
+    import nest_asyncio
+    nest_asyncio.apply()  # Allows nested event loops (needed for FastMCP Cloud)
 
-    try:
-        # FastMCP Cloud already has a running event loop — use it directly
-        loop = asyncio.get_running_loop()
-        if _TRANSPORT == "streamable-http":
-            loop.create_task(mcp.run_streamable_http_async())
-        elif _TRANSPORT == "sse":
-            loop.create_task(mcp.run_sse_async())
-        else:
-            loop.create_task(mcp.run_stdio_async())
-    except RuntimeError:
-        # No running loop (local dev) — start one normally
-        if _TRANSPORT == "streamable-http":
-            asyncio.run(mcp.run_streamable_http_async())
-        elif _TRANSPORT == "sse":
-            asyncio.run(mcp.run_sse_async())
-        else:
-            asyncio.run(mcp.run_stdio_async())
+    mcp.run(transport=_TRANSPORT)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ dependencies = [
     "starlette>=0.40.0",
     "httpx>=0.27.0",
     "fastmcp==2.12.4", # Make sure this is here if you are using 'uv run fastmcp'
+    "nest-asyncio>=1.6.0",
 ]
 
 [project.scripts]
