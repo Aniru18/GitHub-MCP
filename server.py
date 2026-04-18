@@ -46,7 +46,8 @@ from pathlib import Path
 from typing import Any
 from github import Auth, Github, GithubException
 import anyio
-from mcp.server.fastmcp import FastMCP
+# from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 # ── Constants ────────────────────────────────────────────────────────────────
 MAX_CONTENT_CHARS = 50_000
