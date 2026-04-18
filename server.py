@@ -47,7 +47,7 @@ from typing import Any
 from github import Auth, Github, GithubException
 import anyio
 from mcp.server.fastmcp import FastMCP
-
+nest_asyncio.apply()
 # ── Constants ────────────────────────────────────────────────────────────────
 MAX_CONTENT_CHARS = 50_000
 MAX_ANALYZE_FILES = 500
@@ -1037,49 +1037,20 @@ async def get_file_url(
 
 # ── Entry point ──────────────────────────────────────────────────────────────
 
-# def main() -> None:
-#     if _TRANSPORT == "stdio":
-#         print("🔍 Running in STDIO mode (fastmcp dev / inspector)")
-#     else:
-#         print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
-#         path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
-#         print(f"   Transport : {_TRANSPORT}")
-#         print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
-#         print("   Pass your GitHub PAT via the `github_token` tool parameter.")
-#         print("   Press Ctrl+C to stop.\n")
-
-#     mcp.run(transport=_TRANSPORT)
-
-
-# if __name__ == "__main__":
-#     main()
-
-app = mcp.streamable_http_app()
-
-
-# ── Entry point (local dev only) ─────────────────────────────────────────────
 def main() -> None:
-    import uvicorn
-
     if _TRANSPORT == "stdio":
-        print("🔍 Running in STDIO mode")
-        import anyio
-        anyio.run(mcp.run_stdio_async)
-        return
-
-    print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
-    path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
-    print(f"   Transport : {_TRANSPORT}")
-    print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
-    print("   Pass your GitHub PAT via the `github_token` tool parameter.")
-    print("   Press Ctrl+C to stop.\n")
-
-    if _TRANSPORT == "sse":
-        import anyio
-        anyio.run(mcp.run_sse_async)
+        print("🔍 Running in STDIO mode (fastmcp dev / inspector)")
     else:
-        uvicorn.run(app, host=_HOST, port=_PORT)
+        print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
+        path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
+        print(f"   Transport : {_TRANSPORT}")
+        print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
+        print("   Pass your GitHub PAT via the `github_token` tool parameter.")
+        print("   Press Ctrl+C to stop.\n")
+
+    mcp.run(transport=_TRANSPORT)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
+
