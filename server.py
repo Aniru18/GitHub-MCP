@@ -55,6 +55,39 @@ DEFAULT_HOST      = "0.0.0.0"
 
 # ── Parse host / port early so FastMCP is configured before tools register ───
 # (argparse runs at import-time only when executed directly; safe for imports)
+# def _parse_args() -> tuple[str, int, str]:
+#     parser = argparse.ArgumentParser(
+#         description="GitHub Repository Analyzer MCP Server",
+#         add_help=True,
+#     )
+#     parser.add_argument(
+#         "--port", type=int,
+#         default=int(os.environ.get("PORT", DEFAULT_PORT)),
+#         help=f"Port to listen on (default {DEFAULT_PORT})",
+#     )
+#     parser.add_argument(
+#         "--host",
+#         default=os.environ.get("HOST", DEFAULT_HOST),
+#         help=f"Host to bind (default {DEFAULT_HOST})",
+#     )
+#     parser.add_argument(
+#         "--transport",
+#         choices=["stdio", "sse", "streamable-http"],
+#         default=os.environ.get("TRANSPORT", "streamable-http"),
+#         help=(
+#             "Transport to use:\n"
+#             "  stdio            — for 'fastmcp dev' inspector UI (testing)\n"
+#             "  sse              — legacy HTTP+SSE (some older clients)\n"
+#             "  streamable-http  — modern HTTP transport, default for production"
+#         ),
+#     )
+#     # parse_known_args so fastmcp dev can inject its own flags without breaking us
+#     args, _ = parser.parse_known_args()
+#     return args.host, args.port, args.transport
+
+# _HOST, _PORT, _TRANSPORT = _parse_args()
+
+
 def _parse_args() -> tuple[str, int, str]:
     parser = argparse.ArgumentParser(
         description="GitHub Repository Analyzer MCP Server",
@@ -72,18 +105,18 @@ def _parse_args() -> tuple[str, int, str]:
     )
     parser.add_argument(
         "--transport",
-        choices=["stdio", "sse", "streamable-http"],
+        choices=["stdio", "sse", "streamable-http", "http"],  # "http" alias for FastMCP Cloud
         default=os.environ.get("TRANSPORT", "streamable-http"),
-        help=(
-            "Transport to use:\n"
-            "  stdio            — for 'fastmcp dev' inspector UI (testing)\n"
-            "  sse              — legacy HTTP+SSE (some older clients)\n"
-            "  streamable-http  — modern HTTP transport, default for production"
-        ),
+        help="Transport to use",
     )
-    # parse_known_args so fastmcp dev can inject its own flags without breaking us
     args, _ = parser.parse_known_args()
-    return args.host, args.port, args.transport
+
+    # FastMCP Cloud passes "http" — map it to the correct "streamable-http"
+    transport = args.transport
+    if transport == "http":
+        transport = "streamable-http"
+
+    return args.host, args.port, transport
 
 _HOST, _PORT, _TRANSPORT = _parse_args()
 
@@ -1019,3 +1052,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
