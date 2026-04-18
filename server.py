@@ -1022,20 +1022,20 @@ async def get_file_url(
 # if __name__ == "__main__":
 #     main()
 
-if __name__ == "__main__":
-    import argparse
+# if __name__ == "__main__":
+#     import argparse
 
-    parser = argparse.ArgumentParser(description="GitHub Repository Analyzer MCP Server")
-    parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", DEFAULT_PORT)))
-    parser.add_argument("--host", default=os.environ.get("HOST", DEFAULT_HOST))
-    parser.add_argument(
-        "--transport",
-        choices=["stdio", "sse", "streamable-http"],
-        default=os.environ.get("TRANSPORT", "stdio"),
-    )
-    args, _ = parser.parse_known_args()
+#     parser = argparse.ArgumentParser(description="GitHub Repository Analyzer MCP Server")
+#     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", DEFAULT_PORT)))
+#     parser.add_argument("--host", default=os.environ.get("HOST", DEFAULT_HOST))
+#     parser.add_argument(
+#         "--transport",
+#         choices=["stdio", "sse", "streamable-http"],
+#         default=os.environ.get("TRANSPORT", "stdio"),
+#     )
+#     args, _ = parser.parse_known_args()
 
-    transport = args.transport
+#     transport = args.transport
 
-    print(f"🚀 Starting locally on {args.host}:{args.port} | transport: {transport}")
-    mcp.run(transport=transport)
+#     print(f"🚀 Starting locally on {args.host}:{args.port} | transport: {transport}")
+#     mcp.run(transport=transport)
