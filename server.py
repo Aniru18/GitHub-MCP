@@ -1051,6 +1051,5 @@ def main() -> None:
     mcp.run(transport=_TRANSPORT)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())
 
