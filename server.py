@@ -1036,6 +1036,23 @@ async def get_file_url(
 
 # ── Entry point ──────────────────────────────────────────────────────────────
 
+# def main() -> None:
+#     if _TRANSPORT == "stdio":
+#         print("🔍 Running in STDIO mode (fastmcp dev / inspector)")
+#     else:
+#         print(f"🚀 GitHub Repository Analyzer MCP server starting on {_HOST}:{_PORT}")
+#         path = "/mcp" if _TRANSPORT == "streamable-http" else "/sse"
+#         print(f"   Transport : {_TRANSPORT}")
+#         print(f"   Endpoint  : http://{_HOST}:{_PORT}{path}")
+#         print("   Pass your GitHub PAT via the `github_token` tool parameter.")
+#         print("   Press Ctrl+C to stop.\n")
+
+#     mcp.run(transport=_TRANSPORT)
+
+
+# if __name__ == "__main__":
+#     main()
+
 def main() -> None:
     if _TRANSPORT == "stdio":
         print("🔍 Running in STDIO mode (fastmcp dev / inspector)")
@@ -1047,9 +1064,26 @@ def main() -> None:
         print("   Pass your GitHub PAT via the `github_token` tool parameter.")
         print("   Press Ctrl+C to stop.\n")
 
-    mcp.run(transport=_TRANSPORT)
+    import asyncio
+
+    try:
+        # FastMCP Cloud already has a running event loop — use it directly
+        loop = asyncio.get_running_loop()
+        if _TRANSPORT == "streamable-http":
+            loop.create_task(mcp.run_streamable_http_async())
+        elif _TRANSPORT == "sse":
+            loop.create_task(mcp.run_sse_async())
+        else:
+            loop.create_task(mcp.run_stdio_async())
+    except RuntimeError:
+        # No running loop (local dev) — start one normally
+        if _TRANSPORT == "streamable-http":
+            asyncio.run(mcp.run_streamable_http_async())
+        elif _TRANSPORT == "sse":
+            asyncio.run(mcp.run_sse_async())
+        else:
+            asyncio.run(mcp.run_stdio_async())
 
 
 if __name__ == "__main__":
     main()
-
