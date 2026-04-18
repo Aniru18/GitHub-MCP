@@ -1039,3 +1039,11 @@ async def get_file_url(
 
 #     print(f"🚀 Starting locally on {args.host}:{args.port} | transport: {transport}")
 #     mcp.run(transport=transport)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    # Get the ASGI app from FastMCP and serve it directly
+    # This avoids the double asyncio.run() conflict
+    app = mcp.get_asgi_app()
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8081)))
