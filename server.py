@@ -1024,7 +1024,7 @@ mcp = FastMCP(
     name="GitHub Repository Analyzer",
     instructions=(
         "A powerful GitHub repository analysis server. "
-        "IMPORTANT: You must supply your own GitHub Personal Access Token (PAT) "
+        "IMPORTANT: You must ask for user's own GitHub Personal Access Token (PAT) "
         "via the `github_token` parameter on every tool call. "
         "Use these tools to browse file trees, read source code, search patterns, "
         "inspect commits, branches, contributors, issues, pull requests, "
@@ -1869,3 +1869,10 @@ if __name__ == "__main__":
     # Only runs locally. Vercel uses api/index.py (ASGI) instead.
     port = int(os.environ.get("PORT", 8081))
     mcp.run(transport="http", host="0.0.0.0", port=port)
+
+
+# commands to run the server locally
+
+# python server.py --transport streamable-http --port 8000
+
+# npx @modelcontextprotocol/inspector http://localhost:8000/mcp
