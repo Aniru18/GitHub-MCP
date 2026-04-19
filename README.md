@@ -24,7 +24,7 @@
 
 ---
 
-## Option 1 — Cloud Deployment (Vercel) ☁️
+## Option 1 — Cloud Deployment (Vercel)
 
 No installation required. Just add the hosted server to Claude as an MCP connector.
 
@@ -51,7 +51,7 @@ Each tool call requires your GitHub Personal Access Token via the `github_token`
 
 ---
 
-## Option 2 — Deploy Your Own Vercel Instance 🚀
+## Option 2 — Deploy Your Own Vercel Instance
 
 Deploy your own copy of this server to Vercel using the Vercel CLI. You get your own URL, full control, and free hosting on Vercel's serverless platform.
 
@@ -160,7 +160,7 @@ Vercel will rebuild and push the new version to the same URL instantly.
 
 ---
 
-## Option 3 — Run Locally 🖥️
+## Option 3 — Run Locally
 
 Use this if you want `clone_repo`, want to run privately without Vercel, or prefer to keep your token stored in `.env` rather than passing it per tool call.
 
